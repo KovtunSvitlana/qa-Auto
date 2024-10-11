@@ -1,0 +1,600 @@
+{
+	"info": {
+		"_postman_id": "5f39bfca-3b82-4562-8bdc-ec02376189d7",
+		"name": "QAuto API Tests",
+		"description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33606090"
+	},
+	"item": [
+		{
+			"name": "/auth/signup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"data\": {",
+							"            \"type\": \"object\",",
+							"            \"properties\": {",
+							"                \"name\": { \"type\": \"string\" },",
+							"                \"lastName\": { \"type\": \"string\" },",
+							"                \"email\": { \"type\": \"string\", \"format\": \"email\" },",
+							"                \"password\": { \"type\": \"string\" },",
+							"                \"repeatPassword\": { \"type\": \"string\" }",
+							"            },",
+							"            \"required\": [\"name\", \"lastName\", \"email\", \"password\", \"repeatPassword\"]",
+							"        }",
+							"    }",
+							"};",
+							"",
+							"pm.test('Signup response JSON schema is valid', function () {",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							"pm.test(\"Email is valid\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+							"});",
+							"pm.test(\"Check validation errors in different languages\", function () {",
+							"    const responseBody = pm.response.json();",
+							"    const currentLanguage = pm.environment.get(\"locale\");  // Припустимо, що локалізація встановлена в середовищі",
+							"    ",
+							"    const errorMessages = {",
+							"        \"en\": {",
+							"            \"name\": \"Name must be a string\",",
+							"            \"email\": \"Email is invalid\",",
+							"            \"age\": \"Age must be a number\"",
+							"        },",
+							"        \"ua\": {",
+							"            \"name\": \"Ім'я повинно бути рядком\",",
+							"            \"email\": \"Неправильний формат електронної пошти\",",
+							"            \"age\": \"Вік повинен бути числом\"",
+							"        }",
+							"    };",
+							"",
+							"    // Перевірка наявності повідомлень про помилки для кожної властивості",
+							"    pm.test(\"Validation errors match for \" + currentLanguage, function () {",
+							"        pm.expect(responseBody.errors.name).to.eql(errorMessages[currentLanguage].name);",
+							"        pm.expect(responseBody.errors.email).to.eql(errorMessages[currentLanguage].email);",
+							"        pm.expect(responseBody.errors.age).to.eql(errorMessages[currentLanguage].age);",
+							"    });",
+							"});",
+							"pm.test(\"Check data types in user profile\", function () {",
+							"    const responseBody = pm.response.json();",
+							"",
+							"    // Перевірка типів полів",
+							"    pm.expect(typeof responseBody.name).to.eql(\"string\");",
+							"    pm.expect(typeof responseBody.email).to.eql(\"string\");",
+							"    pm.expect(typeof responseBody.age).to.eql(\"number\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Svitlana\",\r\n  \"lastName\": \"Kovtun\",\r\n  \"email\": \"test@test.com\",\r\n  \"password\": \"Qwerty12345\",\r\n  \"repeatPassword\": \"Qwerty12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info?id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "Edit`s user profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Перевизначаємо змінну на глобальному рівні",
+							"if (typeof responseBody === 'undefined') {",
+							"    var responseBody = pm.response.json();  // Відповідь сервера",
+							"}",
+							"",
+							"const data = responseBody.data;  // Доступ до об'єкта data",
+							"",
+							"if (data.photo) {",
+							"    pm.expect(data.photo).to.eql(requestBody.photo);",
+							"} else {",
+							"    console.log(\"Photo field is not returned in response\");",
+							"}",
+							"pm.test(\"Date of birth is valid\", function () {",
+							"    const requestBody = JSON.parse(pm.request.body.raw);  // Тіло запиту",
+							"    const responseBody = pm.response.json();  // Відповідь сервера",
+							"",
+							"    // Перетворення дат у формат Date для порівняння",
+							"    const requestDate = new Date(requestBody.dateBirth);",
+							"    const responseDate = new Date(responseBody.data.dateBirth);  // Використання унікальної назви для об'єкта",
+							"",
+							"    // Перевірка, що рік, місяць і день однакові",
+							"    pm.expect(responseDate.getFullYear()).to.eql(requestDate.getFullYear());",
+							"    pm.expect(responseDate.getMonth()).to.eql(requestDate.getMonth());",
+							"    pm.expect(responseDate.getDate()).to.eql(requestDate.getDate());",
+							"});",
+							"POST {{base_url}}/user/profile/validate",
+							"Content-Type: application/json",
+							"",
+							"{",
+							"  \"name\": 12345,  // Невірний тип даних (має бути рядок)",
+							"  \"email\": \"test@invalid\",  // Невірний формат email",
+							"  \"age\": \"twenty\"  // Невірний тип даних (має бути число)",
+							"}",
+							"pm.test(\"Check validation errors in different languages\", function () {",
+							"    const responseBody = pm.response.json();",
+							"    const currentLanguage = pm.environment.get(\"locale\");  // Припустимо, що локалізація встановлена в середовищі",
+							"    ",
+							"    const errorMessages = {",
+							"        \"en\": {",
+							"            \"name\": \"Name must be a string\",",
+							"            \"email\": \"Email is invalid\",",
+							"            \"age\": \"Age must be a number\"",
+							"        },",
+							"        \"ua\": {",
+							"            \"name\": \"Ім'я повинно бути рядком\",",
+							"            \"email\": \"Неправильний формат електронної пошти\",",
+							"            \"age\": \"Вік повинен бути числом\"",
+							"        }",
+							"    };",
+							"",
+							"    // Перевірка наявності повідомлень про помилки для кожної властивості",
+							"    pm.test(\"Validation errors match for \" + currentLanguage, function () {",
+							"        pm.expect(responseBody.errors.name).to.eql(errorMessages[currentLanguage].name);",
+							"        pm.expect(responseBody.errors.email).to.eql(errorMessages[currentLanguage].email);",
+							"        pm.expect(responseBody.errors.age).to.eql(errorMessages[currentLanguage].age);",
+							"    });",
+							"});",
+							"pm.test(\"Check data types in user profile\", function () {",
+							"    const responseBody = pm.response.json();",
+							"",
+							"    // Перевірка типів полів",
+							"    pm.expect(typeof responseBody.name).to.eql(\"string\");",
+							"    pm.expect(typeof responseBody.email).to.eql(\"string\");",
+							"    pm.expect(typeof responseBody.age).to.eql(\"number\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"photo\": \"user-1621352948859.jpg\",\n  \"name\": \"David\",\n  \"lastName\": \"Zapshen\",\n  \"dateBirth\": \"2001-08-17T15:21:05.000Z\",\n  \"country\": \"Poland\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Changes User`s password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Save userId after creating a user\", function () {",
+							"    const responseBody = pm.response.json();",
+							"    const userId = responseBody.data.userId;  // Перевірте, де у відповіді зберігається userId",
+							"    pm.environment.set(\"userId\", userId);  // Збереження у змінну середовища",
+							"});",
+							"pm.test(\"Check that userId matches the one when the user was created\", function () {",
+							"    const responseBody = pm.response.json();",
+							"    const userId = responseBody.data.userId;  // Отримуємо userId із відповіді при зміні пароля",
+							"    const savedUserId = pm.environment.get(\"userId\");  // Отримуємо збережений userId",
+							"",
+							"    // Перевірка, що userId однакові",
+							"    pm.expect(userId).to.eql(savedUserId);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"oldPassword\": \"FooBar12345\",\n  \"password\": \"kvt9912345\",\n  \"repeatPassword\": \"Qwerty12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info?id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				},
+				"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "auth/signin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);  // Перевіряємо, що статус-код 200",
+							"});",
+							"",
+							"pm.test(\"Authorization token is returned\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.token).to.be.a('string');  // Перевірка, що токен є строкою",
+							"    pm.environment.set(\"authToken\", jsonData.token);  // Збереження токена для подальших запитів",
+							"});",
+							"",
+							"pm.test(\"User information is returned correctly\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.user.email).to.eql(\"test@test.com\");  // Перевірка email",
+							"    pm.expect(jsonData.user.name).to.eql(\"Test User\");  // Перевірка імені",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"test@test.com\",\r\n  \"password\": \"Qwerty12345\",\r\n  \"remember\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info?id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				},
+				"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "auth/logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);  // Успішний вихід із системи\r",
+							"});\r",
+							"\r",
+							"// Виконуємо тестовий запит з використанням старого токена\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"base_url\") + \"/protected-endpoint\",  // Додайте будь-який захищений ендпоінт\r",
+							"    method: 'GET',\r",
+							"    header: {\r",
+							"        'Authorization': 'Bearer ' + pm.environment.get(\"authToken\")\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    pm.test(\"Request with old token fails\", function () {\r",
+							"        pm.expect(res.code).to.eql(401);  // Перевіряємо, що запит із старим токеном не авторизується\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"test@test.com\",\r\n  \"password\": \"Qwerty12345\",\r\n  \"remember\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info?id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new car",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201 - Car successfully added\", function () {\r",
+							"    pm.response.to.have.status(201);  // Статус успішного додавання\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Car information is correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.car.make).to.eql(\"Toyota\");\r",
+							"    pm.expect(jsonData.car.model).to.eql(\"Corolla\");\r",
+							"    pm.expect(jsonData.car.year).to.eql(2021);  // Перевіряємо рік авто\r",
+							"});\r",
+							"\r",
+							"// Можна виконати запит на отримання всіх авто користувача для перевірки кількості\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"base_url\") + \"/user/cars\",\r",
+							"    method: 'GET',\r",
+							"    header: {\r",
+							"        'Authorization': 'Bearer ' + pm.environment.get(\"authToken\")\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    var cars = res.json();\r",
+							"    pm.test(\"User has cars\", function () {\r",
+							"        pm.expect(cars.length).to.be.above(0);  // Перевіряємо, що у користувача є додані авто\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"carBrandId\": 1,\r\n  \"carModelId\": 1,\r\n  \"mileage\": 122\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info?id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Creates an expense",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Expense is greater than previous\", function () {\r",
+							"    // Отримуємо попереднє значення витрат із середовища\r",
+							"    const previousExpense = pm.environment.get(\"lastExpense\") || 0;  // Якщо немає, встановлюємо 0 за замовчуванням\r",
+							"    const responseBody = pm.response.json();\r",
+							"    const currentExpense = responseBody.totalCost;  // Отримуємо значення витрат із відповіді (totalCost)\r",
+							"\r",
+							"    // Перевіряємо, що поточна витрата більша за попередню\r",
+							"    pm.expect(currentExpense).to.be.greaterThan(previousExpense);\r",
+							"\r",
+							"    // Оновлюємо значення витрат у середовищі для подальших запитів\r",
+							"    pm.environment.set(\"lastExpense\", currentExpense);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"carId\": 1,\r\n  \"reportedAt\": \"2021-05-17\",\r\n  \"mileage\": 111,\r\n  \"liters\": 11,\r\n  \"totalCost\": 150,\r\n  \"forceMileage\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info?id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete new user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 - User successfully deleted\", function () {\r",
+							"    pm.response.to.have.status(200);  // Успішне видалення користувача\r",
+							"});\r",
+							"\r",
+							"// Тестовий запит на отримання користувача після видалення\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"base_url\") + \"/user/\" + pm.environment.get(\"userId\"),\r",
+							"    method: 'GET',\r",
+							"    header: {\r",
+							"        'Authorization': 'Bearer ' + pm.environment.get(\"authToken\")\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    pm.test(\"User is not found after deletion\", function () {\r",
+							"        pm.expect(res.code).to.eql(404);  // Перевіряємо, що користувача більше не існує\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Svitlana\",\r\n  \"lastName\": \"Kovtun\",\r\n  \"email\": \"test@test.com\",\r\n  \"password\": \"Qwerty12345\",\r\n  \"repeatPassword\": \"Qwerty12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info?id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}
